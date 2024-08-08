@@ -1,0 +1,173 @@
+import java.util.*;
+
+class Course {
+    String code;
+    String title;
+    String description;
+    String schedule;
+    int slotsAvailable;
+
+    public Course(String code, String title, String description, String schedule, int slotsAvailable) {
+        this.code = code;
+        this.title = title;
+        this.description = description;
+        this.schedule = schedule;
+        this.slotsAvailable = slotsAvailable;
+    }
+
+    public boolean registerStudent() {
+        if (slotsAvailable > 0) {
+            slotsAvailable--;
+            return true;
+        }
+        return false;
+    }
+
+    public void removeStudent() {
+        slotsAvailable++;
+    }
+
+    @Override
+    public String toString() {
+        return "Course Code: " + code + "\nTitle: " + title + "\nDescription: " + description + "\nSchedule: " + schedule + "\nSlots Available: " + slotsAvailable;
+    }
+}
+
+class Student {
+    String id;
+    String name;
+    Set<String> registeredCourses;
+
+    public Student(String id, String name) {
+        this.id = id;
+        this.name = name;
+        this.registeredCourses = new HashSet<>();
+    }
+
+    public boolean registerCourse(Course course) {
+        if (registeredCourses.size() < 5 && course.registerStudent()) {
+            registeredCourses.add(course.code);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removeCourse(Course course) {
+        if (registeredCourses.remove(course.code)) {
+            course.removeStudent();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "Student ID: " + id + "\nName: " + name + "\nRegistered Courses: " + registeredCourses;
+    }
+}
+
+public class CourseRegistrationSystem {
+    private static Map<String, Course> courses = new HashMap<>();
+    private static Map<String, Student> students = new HashMap<>();
+
+    public static void addCourse(String code, String title, String description, String schedule, int slotsAvailable) {
+        courses.put(code, new Course(code, title, description, schedule, slotsAvailable));
+    }
+
+    public static void addStudent(String id, String name) {
+        students.put(id, new Student(id, name));
+    }
+
+    public static void listCourses() {
+        System.out.println("Available Courses:");
+        for (Course course : courses.values()) {
+            System.out.println(course);
+            System.out.println();
+        }
+    }
+
+    public static void registerStudentForCourse(String studentId, String courseCode) {
+        Student student = students.get(studentId);
+        Course course = courses.get(courseCode);
+
+        if (student == null || course == null) {
+            System.out.println("Invalid student ID or course code.");
+            return;
+        }
+
+        if (student.registerCourse(course)) {
+            System.out.println("Student " + studentId + " successfully registered for course " + courseCode);
+        } else {
+            System.out.println("Registration failed. Course may be full or student may have reached course limit.");
+        }
+    }
+
+    public static void removeStudentFromCourse(String studentId, String courseCode) {
+        Student student = students.get(studentId);
+        Course course = courses.get(courseCode);
+
+        if (student == null || course == null) {
+            System.out.println("Invalid student ID or course code.");
+            return;
+        }
+
+        if (student.removeCourse(course)) {
+            System.out.println("Student " + studentId + " successfully removed from course " + courseCode);
+        } else {
+            System.out.println("Course removal failed. Student may not be registered for this course.");
+        }
+    }
+
+    public static void main(String[] args) {
+        // Sample courses
+        addCourse("CS101", "Introduction to Computer Science", "Basic concepts of computer science", "Mon/Wed 10:00-11:30", 30);
+        addCourse("MATH101", "Calculus I", "Introduction to calculus", "Tue/Thu 09:00-10:30", 25);
+
+        // Sample students
+        addStudent("S001", "Alice");
+        addStudent("S002", "Bob");
+
+        // Example usage
+        Scanner scanner = new Scanner(System.in);
+        boolean running = true;
+
+        while (running) {
+            System.out.println("1. List Courses");
+            System.out.println("2. Register for Course");
+            System.out.println("3. Remove Course");
+            System.out.println("4. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // Consume newline
+
+            switch (choice) {
+                case 1:
+                    listCourses();
+                    break;
+                case 2:
+                    System.out.print("Enter student ID: ");
+                    String studentId = scanner.nextLine();
+                    System.out.print("Enter course code: ");
+                    String courseCode = scanner.nextLine();
+                    registerStudentForCourse(studentId, courseCode);
+                    break;
+                case 3:
+                    System.out.print("Enter student ID: ");
+                    studentId = scanner.nextLine();
+                    System.out.print("Enter course code: ");
+                    courseCode = scanner.nextLine();
+                    removeStudentFromCourse(studentId, courseCode);
+                    break;
+                case 4:
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+                    break;
+            }
+        }
+
+        scanner.close();
+    }
+}
+ 

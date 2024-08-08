@@ -1,0 +1,51 @@
+import java.util.Scanner;
+
+public class Numbergame {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        boolean playAgain = true;
+        int totalRounds = 0;
+        int roundsWon = 0;
+
+        while (playAgain) {
+            totalRounds++;
+            int attempts = 0;
+            int maxAttempts = 5;
+            int mynumber = (int) (Math.random() * 100);
+            boolean correctGuess = false;
+
+            System.out.println("Guess the number (between 0 and 99). You have " + maxAttempts + " attempts.");
+
+            while (attempts < maxAttempts && !correctGuess) {
+                System.out.print("Attempt " + (attempts + 1) + ": ");
+                int usernumber = sc.nextInt();
+                attempts++;
+
+                if (usernumber == mynumber) {
+                    System.out.println("Correct! You guessed the number.");
+                    correctGuess = true;
+                } else if (usernumber < mynumber) {
+                    System.out.println("Too low!");
+                } else {
+                    System.out.println("Too high!");
+                }
+            }
+
+            if (!correctGuess) {
+                System.out.println("Sorry, you didn't guess the number. The correct number was: " + mynumber);
+            } else {
+                roundsWon++;
+            }
+
+            System.out.print("Do you want to play again? (yes/no): ");
+            String response = sc.next();
+            playAgain = response.equalsIgnoreCase("yes");
+        }
+
+        System.out.println("Game Over!");
+        System.out.println("Total rounds played: " + totalRounds);
+        System.out.println("Rounds won: " + roundsWon);
+
+        sc.close();
+    }
+}
